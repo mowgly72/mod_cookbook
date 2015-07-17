@@ -1,0 +1,311 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cookbook Documentation</title><style></style></head><body>
+<h1 id="cookbook-documentation">Cookbook Documentation</h1>
+<p>This is a documentation for Cookbook app created by <a href="http://robotemplates.com/">Robo Templates</a>. Cookbook is a native Android application. You can find here useful info about configuring, customizing, building and publishing the app.</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=dxpd-ryoTH4">Video preview on YouTube</a></li>
+<li><a href="https://play.google.com/store/apps/details?id=com.robotemplates.cookbook">Live demo on Google Play</a></li>
+</ul>
+<h2 id="features">Features</h2>
+<ul>
+<li>Support for Ice Cream Sandwich (Android 4.0.3) and newer</li>
+<li>Developed with Android Studio &amp; Gradle</li>
+<li>Material design following Android Design Guidelines</li>
+<li>Eight color themes (blue, brown, carrot, gray, green, indigo, red, yellow)</li>
+<li>Animations and effects</li>
+<li>Animated action bar</li>
+<li>Animated floating action button</li>
+<li>Parallax scrolling effect</li>
+<li>Quick return effect</li>
+<li>Ripple effect</li>
+<li>Navigation drawer menu with categories</li>
+<li>List of recipes</li>
+<li>Search for recipe with suggestion</li>
+<li>Favorite recipes</li>
+<li>Recipe detail screen (intro, ingredients, instruction)</li>
+<li>Ingredients check list</li>
+<li>Share recipe or shopping list</li>
+<li>Open web link of the recipe</li>
+<li>Kitchen timer</li>
+<li>Recalculate quantity of ingredients by servings</li>
+<li>Convert calories to joules</li>
+<li>About dialog</li>
+<li>Rate app on Google Play</li>
+<li>Data (categories, recipes, ingredients) is stored in local SQLite database</li>
+<li>Images can be loaded from the Internet or locally</li>
+<li>Caching images</li>
+<li>App works in offline mode</li>
+<li>Google Analytics</li>
+<li>AdMob</li>
+<li>Responsive design and tablet support (portrait, landscape, handling orientation change)</li>
+<li>Support for high-resolution displays (xxhdpi)</li>
+<li>Multi-language support</li>
+<li>Possibility to build the project without Android Studio / Eclipse (using Gradle &amp; Android SDK)</li>
+<li>Easy configuration</li>
+<li>Well documented</li>
+<li>Top quality clean code created by experienced senior Android developer</li>
+<li>Free support</li>
+</ul>
+<h2 id="android-sdk-android-studio">Android SDK &amp; Android Studio</h2>
+<p>This chapter describes how to install Android SDK and Android Studio. You don&#39;t have to install Android Studio, but it&#39;s better. The project can be built without Android Studio, using Gradle and Android SDK. Gradle is a build system used for building final APK file.</p>
+<ol>
+<li>Install <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java JDK</a></li>
+<li>Install <a href="https://developer.android.com/sdk/index.html">Android SDK</a></li>
+<li>Run Android SDK Manager and <a href="https://developer.android.com/sdk/installing/adding-packages.html">download necessary SDK packages</a>, make sure that you have installed Android SDK Tools, Android SDK Platform-tools, Android SDK Build-tools, Android Support Repository, Android Support Library and Google Play services</li>
+<li>Install <a href="https://developer.android.com/sdk/index.html">Android Studio</a></li>
+<li>Now you should be able to open/edit the Android project and build APK</li>
+<li>You can also install <a href="http://www.genymotion.com/">Genymotion</a> - fast Android emulator</li>
+</ol>
+<h2 id="project-structure">Project structure</h2>
+<p>Project has the following structure (directories are marked by square braces):</p>
+<ul>
+<li>[doc] - documentation</li>
+<li>[extras] - contains extras</li>
+<li>[extras]/[keystore]</li>
+<li>[extras]/[keystore]/cookbook.keystore - keystore certificate for signing APK</li>
+<li>[extras]/[keystore]/cookbook.properties - alias and password for keystore</li>
+<li>[gradle]</li>
+<li>[gradle]/[wrapper] - Gradle Wrapper</li>
+<li>[mobile] - main module</li>
+<li>[mobile]/[libs] - contains 3rd party libraries (not used)</li>
+<li>[mobile]/[src] - contains source code</li>
+<li>[mobile]/[src]/[main]</li>
+<li>[mobile]/[src]/[main]/[assets] - asset files (prepopulated database, images)</li>
+<li>[mobile]/[src]/[main]/[java] - java sources</li>
+<li>[mobile]/[src]/[main]/[res] - xml resources, drawables</li>
+<li>[mobile]/[src]/[main]/AndroidManifest.xml - manifest file</li>
+<li>[mobile]/build.gradle - main build script</li>
+<li>[mobile]/proguard-rules.pro - Proguard config (not used)</li>
+<li>.gitignore - Gitignore file</li>
+<li>build.gradle - parent build script</li>
+<li>gradle.properties - build script properties containing path to keystore</li>
+<li>gradlew - Gradle Wrapper (Unix)</li>
+<li>gradlew.bat - Gradle Wrapper (Windows)</li>
+<li>README.md - readme file</li>
+<li>settings.gradle - build settings containing list of modules</li>
+</ul>
+<p>Java packages:</p>
+<ul>
+<li>com.robotemplates.cookbook - contains application class and main config class</li>
+<li>com.robotemplates.cookbook.activity - contains activities representing screens</li>
+<li>com.robotemplates.cookbook.adapter - contains all adapters</li>
+<li>com.robotemplates.cookbook.content - contains content provider for search suggestions</li>
+<li>com.robotemplates.cookbook.database - contains database helper and tools for managing asynchronous database calls</li>
+<li>com.robotemplates.cookbook.database.dao - database access objects</li>
+<li>com.robotemplates.cookbook.database.data - data model wrapper</li>
+<li>com.robotemplates.cookbook.database.model - database models representing SQL tables</li>
+<li>com.robotemplates.cookbook.database.query - database queries</li>
+<li>com.robotemplates.cookbook.dialog - contains dialogs</li>
+<li>com.robotemplates.cookbook.fragment - contains fragments with main application logic</li>
+<li>com.robotemplates.cookbook.listener - contains listeners</li>
+<li>com.robotemplates.cookbook.utility - contains utilities</li>
+<li>com.robotemplates.cookbook.view - contains custom views, layouts, decorations and other tools for working with views</li>
+</ul>
+<h2 id="configuration">Configuration</h2>
+<p>This chapter describes how to configure the project to be ready for publishing. All these steps are very important!</p>
+<h3 id="1-import">1. Import</h3>
+<p>Unzip the package and import/open the project in Android Studio. Choose &quot;Import project&quot; on Quick Start screen and select &quot;cookbook-x.y.z&quot; directory.</p>
+<h3 id="2-rename-package-name">2. Rename package name</h3>
+<ol>
+<li>Create new package in <em>java</em> directory, e.g. &quot;com.mycompany.myapp&quot;. Right click on <em>mobile/src/main/java</em> directory -&gt; New -&gt; Package.</li>
+<li>Select all packages and classes in &quot;com.robotemplates.cookbook&quot; and move (drag) them to the new package. Confirm by click on &quot;Do Refactor&quot;.</li>
+<li>Delete the old package &quot;com.robotemplates.cookbook&quot;.</li>
+<li>Open <em>mobile/src/main/AndroidManifest.xml</em> and rename the package name. Select package name &quot;com.robotemplates.cookbook&quot; -&gt; Right click on selected text -&gt; Refactor -&gt; Rename -&gt; enter the new package name, select &quot;Search in comments and strings&quot; option -&gt; Refactor -&gt; Do Refactor.</li>
+<li>Clean the project. Main menu -&gt; Build -&gt; Clean Project.</li>
+<li>Replace all occurrences of &quot;com.robotemplates.cookbook&quot; for a new package name, e.g. &quot;com.mycompany.myapp&quot;. Right click on <em>mobile</em> directory -&gt; Replace in Path -&gt; set old and new package names, Case sensitive to true -&gt; Find -&gt; Replace.</li>
+<li>Clean the project again. Main menu -&gt; Build -&gt; Clean Project.</li>
+<li>Synchronize the project. Main menu -&gt; Tools -&gt; Android -&gt; Sync Project with Gradle Files.</li>
+<li>If you see &quot;Activity class does not exist&quot; error, restart Android Studio.</li>
+</ol>
+<h3 id="3-rename-application-name">3. Rename application name</h3>
+<p>Open <em>mobile/src/main/res/values/strings.xml</em> and change &quot;Cookbook&quot; to your own name. Change <em>app_name</em> and <em>drawer_title</em> strings.</p>
+<h3 id="4-create-launcher-icon">4. Create launcher icon</h3>
+<p>Right click on <em>mobile/src/main/res</em> directory -&gt; New -&gt; Image Asset -&gt; Asset type Launcher Icons, Resource name &quot;ic_launcher&quot;, create the icon -&gt; Next -&gt; Finish.</p>
+<p>You can also change the icon replacing <em>ic_launcher.png</em> file in <em>mipmap-mdpi</em>, <em>mipmap-hdpi</em>, <em>mipmap-xhdpi</em>, <em>mipmap-xxhdpi</em>, <em>mipmap-xxxhdpi</em> directories. See <a href="http://petrnohejl.github.io/Android-Cheatsheet-For-Graphic-Designers/#screen-densities-and-icon-dimensions">Android Cheatsheet for Graphic Designers</a> for correct launcher icon dimensions.</p>
+<p>Another possibility is to create launcher icons using <a href="http://romannurik.github.io/AndroidAssetStudio/icons-launcher.html">Android Asset Studio</a>.</p>
+<h3 id="5-choose-color-theme">5. Choose color theme</h3>
+<p>Open <em>mobile/src/main/AndroidManifest.xml</em> and change value of <code>application.android:theme</code> attribute. There are 8 themes you can use:</p>
+<ul>
+<li>Theme.Cookbook.Blue</li>
+<li>Theme.Cookbook.Brown</li>
+<li>Theme.Cookbook.Carrot</li>
+<li>Theme.Cookbook.Gray</li>
+<li>Theme.Cookbook.Green</li>
+<li>Theme.Cookbook.Indigo</li>
+<li>Theme.Cookbook.Red</li>
+<li>Theme.Cookbook.Yellow</li>
+</ul>
+<p>You also have to modify MainActivity&#39;s theme. Main Activity uses a special theme with transparent status bar because of navigation drawer status overlay effect. It is an <code>activity.android:theme</code> attribute. Choose one of these themes:</p>
+<ul>
+<li>Theme.Cookbook.TransparentStatusBar.Blue</li>
+<li>Theme.Cookbook.TransparentStatusBar.Brown</li>
+<li>Theme.Cookbook.TransparentStatusBar.Carrot</li>
+<li>Theme.Cookbook.TransparentStatusBar.Gray</li>
+<li>Theme.Cookbook.TransparentStatusBar.Green</li>
+<li>Theme.Cookbook.TransparentStatusBar.Indigo</li>
+<li>Theme.Cookbook.TransparentStatusBar.Red</li>
+<li>Theme.Cookbook.TransparentStatusBar.Yellow</li>
+</ul>
+<h3 id="6-prepare-database-and-images">6. Prepare database and images</h3>
+<p>Data (categories, recipes, ingredients) is stored in local SQLite database. Prepopulated database with recipes is stored in <em>mobile/src/main/assets/cookbook.db</em>. This prepopulated database is automatically copied on device storage on first run of the application and also if the database is updated (see below for more info about database update). Database is in SQLite 3.0 format and has the following structure (SQL script):</p>
+<pre><code class="lang-sql"><span class="hljs-operator"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">`categories`</span> (<span class="hljs-string">`id`</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-keyword">PRIMARY</span> <span class="hljs-keyword">KEY</span> AUTOINCREMENT , <span class="hljs-string">`name`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`image`</span> <span class="hljs-built_in">VARCHAR</span> );</span>
+<span class="hljs-operator"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">`recipes`</span> (<span class="hljs-string">`id`</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-keyword">PRIMARY</span> <span class="hljs-keyword">KEY</span> AUTOINCREMENT , <span class="hljs-string">`category_id`</span> <span class="hljs-built_in">BIGINT</span> , <span class="hljs-string">`name`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`intro`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`instruction`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`image`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`link`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`time`</span> <span class="hljs-built_in">INTEGER</span> , <span class="hljs-string">`servings`</span> <span class="hljs-built_in">INTEGER</span> , <span class="hljs-string">`calories`</span> <span class="hljs-built_in">INTEGER</span> , <span class="hljs-string">`favorite`</span> <span class="hljs-built_in">SMALLINT</span> );</span>
+<span class="hljs-operator"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">`recipes_category_idx`</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">`recipes`</span> ( <span class="hljs-string">`category_id`</span> );</span>
+<span class="hljs-operator"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">`ingredients`</span> (<span class="hljs-string">`id`</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-keyword">PRIMARY</span> <span class="hljs-keyword">KEY</span> AUTOINCREMENT , <span class="hljs-string">`recipe_id`</span> <span class="hljs-built_in">BIGINT</span> , <span class="hljs-string">`name`</span> <span class="hljs-built_in">VARCHAR</span> , <span class="hljs-string">`quantity`</span> <span class="hljs-built_in">FLOAT</span> , <span class="hljs-string">`unit`</span> <span class="hljs-built_in">VARCHAR</span> );</span>
+<span class="hljs-operator"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">`ingredients_recipe_idx`</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">`ingredients`</span> ( <span class="hljs-string">`recipe_id`</span> );</span>
+</code></pre>
+<p>As you can see, there are 3 SQL tables (categories, recipes, ingredients) and 2 indexes (category_id, recipe_id) which are also foreign keys. This database schema corresponds to database models in the code. You can find models in <em>com.robotemplates.cookbook.database.model</em> package.</p>
+<p>This app contains a prepopulated database with demo data. Open database file <em>mobile/src/main/assets/cookbook.db</em> in any SQLite editor and modify data in the database as you need. You can add/remove/edit recipes, categories and ingredients. There are many <a href="http://www.sqlite.org/cvstrac/wiki?p=ManagementTools">SQLite editors</a>. We recommend <a href="http://sqlitestudio.pl/">SQLite Studio</a> because it is free, open source, cross-platform, portable and intuitive. If you are working with SQLite Studio, don&#39;t forget to commit changes. Don&#39;t modify structure of the database, modify only data! Database tables have following columns:</p>
+<p>categories:</p>
+<ul>
+<li>id (integer) - Unique primary key</li>
+<li>name (string) - Category name</li>
+<li>image (string) - URL of the category image. This field is optional and if it is empty or null, no category image is shown. URL should be in this format: <em>assets://categories/mycategory.png</em>. It points to <em>mobile/src/main/assets/categories</em> folder where all category images should be stored.</li>
+</ul>
+<p>recipes:</p>
+<ul>
+<li>id (integer) - Unique primary key</li>
+<li>category_id (integer) - Foreign key pointing to category id</li>
+<li>name (string) - Recipe name</li>
+<li>intro (string) - Introduction text on recipe detail screen. This field is optional and if it is empty or null, no text is shown.</li>
+<li>instruction (string) - Main instruction text for the recipe</li>
+<li>image (string) - URL of the recipe image. Image can be loaded from the Internet (URL with standard HTTP protocol) or locally from assets. Local URL should be in this format: <em>assets://recipes/myrecipe.jpg</em>. It points to <em>mobile/src/main/assets/recipes</em> folder where all local recipe images should be stored.</li>
+<li>link (string) - URL of the web page. This field is optional and if it is empty or null, no web link is shown in the menu.</li>
+<li>time (integer) - Cooking time in minutes. This field is optional and if it is empty or null, no time is shown.</li>
+<li>servings (integer) - Number of servings. This field is optional and if it is empty or null, no servings info is shown.</li>
+<li>calories (integer) - Number of calories in kcal for 100 g of serving. This field is optional and if it is empty or null, no calories info is shown.</li>
+<li>favorite (boolean) - True/false value if the recipe is favorite. This field should stay 0 by default. This is the only column modified by the app. All other columns are read only.</li>
+</ul>
+<p>ingredients:</p>
+<ul>
+<li>id (integer) - Unique primary key</li>
+<li>recipe_id (integer) - Foreign key pointing to recipe id</li>
+<li>name (string) - Ingredient name</li>
+<li>quantity (float) - Quantity of the ingredient. This field is optional and if it is empty or null, no quantity is shown.</li>
+<li>unit (string) - Physical unit of the quantity. This field is optional and if it is empty or null, no unit is shown.</li>
+</ul>
+<p>There are two special categories: &quot;All recipes&quot; and &quot;Favorites&quot;. Keep in mind that these categories are automatically added to the menu and does not have to be in the database. Categories are ordered by <em>id</em>, recipes are ordered alphabetically by <em>name</em> and ingredients are ordered by <em>id</em>. Search query is looking for a match in <em>name</em>, <em>intro</em> and <em>instruction</em> fields. Searching is case insensitive.</p>
+<p>If you modify prepopulated database in <em>assets</em> folder, internal database on device storage will not be updated automatically. If you make any change in the prepopulated database, you have to increment database version. Open configuration file <em>/mobile/src/main/java/com/robotemplates/cookbook/CookbookConfig.java</em> and increment number in <em>DATABASE_VERSION</em> constant. Database helper detects that database data has been changed and copy the prepopulated database on device storage so data in the app will be updated. You have to increment database version every time when you want to publish a new build on Google Play and you have changed the data in prepopulated database.</p>
+<p>Name of the prepopulated database is defined in configuration file <em>/mobile/src/main/java/com/robotemplates/cookbook/CookbookConfig.java</em> in <em>DATABASE_NAME</em> constant. Database file name should correspond to the file in <em>mobile/src/main/assets</em> directory. The database file should be stored in this directory and not in any sub-directory.</p>
+<h3 id="7-setup-google-analytics">7. Setup Google Analytics</h3>
+<p>Open <em>mobile/src/main/res/xml/analytics_app_tracker.xml</em> and change UA code (<em>ga_trackingId</em> parameter) to your own UA code. You can enable/disable Google Analytics in configuration file <em>/mobile/src/main/java/com/robotemplates/cookbook/CookbookConfig.java</em>.</p>
+<h3 id="8-setup-admob">8. Setup AdMob</h3>
+<p>Open <em>mobile/src/main/res/values/admob.xml</em> and change unit ids (<em>admob_unit_id_recipe_list</em> and <em>admob_unit_id_recipe_detail</em> parameters) to your own unit ids (banner ids). You should also specify your test device id (<em>admob_test_device_id</em> parameter) and use test mode when debugging the app. Requesting test ads is recommended when testing your application so you do not request invalid impressions. You can find your hashed device id in the logcat output by requesting an ad when debugging on your device. You can enable/disable AdMob banners in configuration file <em>/mobile/src/main/java/com/robotemplates/cookbook/CookbookConfig.java</em>.</p>
+<h3 id="9-create-signing-keystore">9. Create signing keystore</h3>
+<p>You need to create your own keystore to sign an APK file before publishing on Google Play. You can create the keystore via <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool utility</a> which is part of Java JDK.</p>
+<ol>
+<li>Run following command: <code>keytool -genkey -v -keystore cookbook.keystore -alias &lt;your_alias&gt; -keyalg RSA -keysize 2048 -validity 36500</code> where <code>&lt;your_alias&gt;</code> is your alias name. For example your company name or app name. If you are going to publish the app on Google Play, you have to set the validity attribute.</li>
+<li>Copy new <em>cookbook.keystore</em> file into <em>extras/keystore</em> directory.</li>
+<li>Open <em>extras/keystore/cookbook.properties</em> and set keystore alias and passwords.</li>
+<li>Done. Remember that <em>cookbook.keystore</em> and <em>cookbook.properties</em> are automatically read by Gradle script when creating a release APK via <em>assembleRelease</em> command. Paths to these files are defined in <em>gradle.properties</em>.</li>
+</ol>
+<h2 id="customization">Customization</h2>
+<p>This chapter describes some optional customizations of the app.</p>
+<h3 id="custom-colors-and-icons">Custom colors and icons</h3>
+<p>You can customize colors in <em>mobile/src/main/res/values/colors.xml</em>.</p>
+<p>There are 11 category icons. If you need to create the icon for the category, it is recommended to use <a href="http://romannurik.github.io/AndroidAssetStudio/index.html">Android Asset Studio</a>. See <a href="http://petrnohejl.github.io/Android-Cheatsheet-For-Graphic-Designers/#screen-densities-and-icon-dimensions">Android Cheatsheet for Graphic Designers</a> for correct icon dimensions. Use the icons with highest DPI.</p>
+<h3 id="custom-banner-logo-in-drawer-menu">Custom banner logo in drawer menu</h3>
+<p>There is a green table cloth texture shown in the drawer menu. You can easily change this texture replacing <em>banner.png</em> file in <em>drawable-xxhdpi</em> directory.</p>
+<h3 id="about-dialog">About dialog</h3>
+<p>If you want to change the text in About dialog, just open <em>mobile/src/main/res/values/strings.xml</em> and edit <em>dialog_about_message</em> string. Note that this text is in HTML format and can also contains links.</p>
+<h3 id="multi-language-support">Multi-language support</h3>
+<p>Create a new directory <em>mobile/src/main/res/values-xx</em> where <em>xx</em> is an <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1 code</a> of the language you want to translate. For example &quot;values-es&quot; for Spanish, &quot;values-fr&quot; for French, &quot;values-de&quot; for German etc. Copy strings.xml from <em>mobile/src/main/res/values</em> into the new directory. Now you can translate texts for specific languages. The language is automatically determined by system device settings. If there is no match with <em>values-xx</em> language, default language in <em>mobile/src/main/res/values</em> is selected. See <a href="http://developer.android.com/guide/topics/resources/localization.html">Localizing with Resources</a> for more info.</p>
+<h2 id="building-publishing">Building &amp; publishing</h2>
+<p>This chapter describes how to build APK with Gradle and prepare app for publishing. Android Studio uses Gradle for building Android applications.</p>
+<p>You don&#39;t need to install Gradle on your system, because there is a <a href="http://www.gradle.org/docs/current/userguide/gradle_wrapper.html">Gradle Wrapper</a>. The wrapper is a batch script on Windows, and a shell script for other operating systems. When you start a Gradle build via the wrapper, Gradle will be automatically downloaded and used to run the build.</p>
+<ol>
+<li>Open the project in Android Studio</li>
+<li>Open configuration file <em>/mobile/src/main/java/com/robotemplates/cookbook/CookbookConfig.java</em> and set constants as required (see below for more info)</li>
+<li>Open main build script <em>/mobile/build.gradle</em> and set constants as required (see below for more info)</li>
+<li>Run <code>gradlew assemble</code> in console</li>
+<li>APK should be available in <em>/mobile/build/outputs/apk</em> directory</li>
+</ol>
+<p><strong>Note:</strong> You will also need a &quot;local.properties&quot; file to set the location of the SDK in the same way that the existing SDK requires, using the &quot;sdk.dir&quot; property. Example of &quot;local.properties&quot; on Windows: <code>sdk.dir=C:\\adt-bundle-windows\\sdk</code>. Alternatively, you can set an environment variable called &quot;ANDROID_HOME&quot;.</p>
+<p><strong>Tip:</strong> Command <code>gradlew assemble</code> builds both - debug and release APK. You can use <code>gradlew assembleDebug</code> to build debug APK. You can use <code>gradlew assembleRelease</code> to build release APK. Debug APK is signed by debug keystore. Release APK is signed by own keystore, stored in <em>/extras/keystore</em> directory.</p>
+<p><strong>Signing process:</strong> Keystore passwords are automatically loaded from property file during building the release APK. Path to this file is defined in &quot;keystore.properties&quot; property in &quot;gradle.properties&quot; file. If this property or the file does not exist, user is asked for passwords explicitly.</p>
+<h3 id="cookbookconfig-java">CookbookConfig.java</h3>
+<p>This is the main configuration file. There are some true/false switches. It is very important to correctly set these switches before building the APK.</p>
+<ul>
+<li>LOGS - true for enabling debug logs</li>
+<li>ANALYTICS - true for enabling Google Analytics</li>
+<li>ADMOB_RECIPE_LIST_BANNER - true for enabling Google AdMob banner on recipe list screen</li>
+<li>ADMOB_RECIPE_DETAIL_BANNER - true for enabling Google AdMob on recipe detail screen</li>
+</ul>
+<p><strong>Important:</strong> Following configuration should be used for release APK, intended for publishing on Google Play:</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">boolean</span> LOGS = <span class="hljs-keyword">false</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">boolean</span> ANALYTICS = <span class="hljs-keyword">true</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">boolean</span> ADMOB_RECIPE_LIST_BANNER = <span class="hljs-keyword">true</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">boolean</span> ADMOB_RECIPE_DETAIL_BANNER = <span class="hljs-keyword">true</span>;
+</code></pre>
+<h3 id="build-gradle">build.gradle</h3>
+<p>This is the main build script and there are 4 important constants for defining version code and version name.</p>
+<ul>
+<li>VERSION_MAJOR</li>
+<li>VERSION_MINOR</li>
+<li>VERSION_PATCH</li>
+<li>VERSION_BUILD</li>
+</ul>
+<p>See <a href="http://developer.android.com/tools/publishing/versioning.html#appversioning">Versioning Your Applications</a> in Android documentation for more info.</p>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li><a href="http://developer.android.com/tools/support-library/index.html">Android Support Library</a></li>
+<li><a href="https://developer.android.com/reference/android/support/v7/appcompat/package-summary.html">AppCompat</a></li>
+<li><a href="https://github.com/makovkastar/FloatingActionButton">FloatingActionButton</a></li>
+<li><a href="http://developer.android.com/google/play-services/index.html">Google Play Services</a></li>
+<li><a href="https://github.com/afollestad/material-dialogs">Material Dialogs</a></li>
+<li><a href="http://ormlite.com/">OrmLite</a></li>
+<li><a href="https://github.com/bignerdranch/recyclerview-multiselect">RecyclerView Multiselect</a></li>
+<li><a href="https://github.com/emilsjolander/StickyScrollViewItems">StickyScrollViewItems</a></li>
+<li><a href="https://github.com/nostra13/Android-Universal-Image-Loader">Universal Image Loader</a></li>
+</ul>
+<h2 id="demo-content">Demo content</h2>
+<p>Following images are used in the demo app:</p>
+<ul>
+<li>Goulash Soup, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/elsiehui/14706147387">https://www.flickr.com/photos/elsiehui/14706147387</a></li>
+<li>Apple Pie, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/15160498676">https://www.flickr.com/photos/jeffreyww/15160498676</a></li>
+<li>Perfect Sandwiches, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/5696849258">https://www.flickr.com/photos/jeffreyww/5696849258</a></li>
+<li>Orange Juice With Ginger, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/breville/8735921698">https://www.flickr.com/photos/breville/8735921698</a></li>
+<li>Oven Roasted Potato Fries, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/gudlyf/3862654181">https://www.flickr.com/photos/gudlyf/3862654181</a></li>
+<li>Baked Biscuits, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/epw/2675532274">https://www.flickr.com/photos/epw/2675532274</a></li>
+<li>Belgian Waffle, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/ralphandjenny/5434298641">https://www.flickr.com/photos/ralphandjenny/5434298641</a></li>
+<li>English Breakfast, <a href="https://creativecommons.org/licenses/by-nd/2.0/">CC BY-ND 2.0</a>, <a href="https://www.flickr.com/photos/dewolfert/3866881455">https://www.flickr.com/photos/dewolfert/3866881455</a></li>
+<li>Eggs With Crab Dip, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/5291277352">https://www.flickr.com/photos/jeffreyww/5291277352</a></li>
+<li>Hot Gingered Prawns, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/breville/8735236955">https://www.flickr.com/photos/breville/8735236955</a></li>
+<li>Rings Calamari, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/saechang/4509691209">https://www.flickr.com/photos/saechang/4509691209</a></li>
+<li>Sushi Rolls, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/sql_samson/3977310279">https://www.flickr.com/photos/sql_samson/3977310279</a></li>
+<li>Tuna Nachos, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/dinesarasota/6791316679">https://www.flickr.com/photos/dinesarasota/6791316679</a></li>
+<li>Curried Asparagus and Kaffir Lime Soup, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/dougbeckers/12870205414">https://www.flickr.com/photos/dougbeckers/12870205414</a></li>
+<li>Matzoh Ball Soup, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/stuart_spivack/298130263">https://www.flickr.com/photos/stuart_spivack/298130263</a></li>
+<li>Potato Soup, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/whitneyinchicago/4072293909">https://www.flickr.com/photos/whitneyinchicago/4072293909</a></li>
+<li>Split Pea Soup, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/cogdog/11579080605">https://www.flickr.com/photos/cogdog/11579080605</a></li>
+<li>Vegetable Soup, <a href="https://creativecommons.org/licenses/by-nd/2.0/">CC BY-ND 2.0</a>, <a href="https://www.flickr.com/photos/9439733@N02/2088701805">https://www.flickr.com/photos/9439733@N02/2088701805</a></li>
+<li>Halushki, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/avlxyz/4567416647">https://www.flickr.com/photos/avlxyz/4567416647</a></li>
+<li>Orange Chicken With Bacon Fried Rice, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/16241424778">https://www.flickr.com/photos/jeffreyww/16241424778</a></li>
+<li>Posole and Quesadillas, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/15865540490">https://www.flickr.com/photos/jeffreyww/15865540490</a></li>
+<li>Spaghetti Carbonara, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jeffreyww/13726596053">https://www.flickr.com/photos/jeffreyww/13726596053</a></li>
+<li>Tuna Steak, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/elwillo/5993250162">https://www.flickr.com/photos/elwillo/5993250162</a></li>
+<li>Summer Salad With Tomatoes and Basil, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/jasonsewall/6090556228">https://www.flickr.com/photos/jasonsewall/6090556228</a></li>
+<li>Cupcake, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/jenumfamily/6911184740">https://www.flickr.com/photos/jenumfamily/6911184740</a></li>
+<li>Key Lime Pie, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/ralphandjenny/5941648290">https://www.flickr.com/photos/ralphandjenny/5941648290</a></li>
+<li>Lemon Berry Trifle, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/brooke/2364980971">https://www.flickr.com/photos/brooke/2364980971</a></li>
+<li>Meringue Cake With Red Currant Curd Filling, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/69668444@N03/7801333926">https://www.flickr.com/photos/69668444@N03/7801333926</a></li>
+<li>Strawberry Cake, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, <a href="https://www.flickr.com/photos/martinhipp/4212723686">https://www.flickr.com/photos/martinhipp/4212723686</a></li>
+<li>Sunset Cocktail, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/rodeime/16157402619">https://www.flickr.com/photos/rodeime/16157402619</a></li>
+<li>Tango Berry Smoothie, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://www.flickr.com/photos/vegateam/5867754540">https://www.flickr.com/photos/vegateam/5867754540</a></li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li>Version 1.0.0<ul>
+<li>Initial release</li>
+</ul>
+</li>
+<li>Version 1.1.0<ul>
+<li>Update SDK and libraries</li>
+</ul>
+</li>
+</ul>
+<h2 id="developed-by">Developed by</h2>
+<p><a href="http://robotemplates.com/">Robo Templates</a></p>
+<h2 id="license">License</h2>
+<p><a href="http://codecanyon.net/licenses">Codecanyon licenses</a></p>
+
+</body></html>
