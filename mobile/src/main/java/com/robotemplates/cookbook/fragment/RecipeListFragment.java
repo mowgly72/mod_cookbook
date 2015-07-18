@@ -48,6 +48,7 @@ import com.robotemplates.cookbook.activity.RecipeDetailActivity;
 import com.robotemplates.cookbook.adapter.RecipeListAdapter;
 import com.robotemplates.cookbook.adapter.SearchSuggestionAdapter;
 import com.robotemplates.cookbook.content.RecipeSearchRecentSuggestionsProvider;
+import com.robotemplates.cookbook.database.DBApp;
 import com.robotemplates.cookbook.database.DatabaseCallListener;
 import com.robotemplates.cookbook.database.DatabaseCallManager;
 import com.robotemplates.cookbook.database.DatabaseCallTask;
@@ -88,12 +89,12 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 	private static final int LAZY_LOADING_TAKE = 128;
 	private static final int LAZY_LOADING_OFFSET = 4;
 
-    private String urlJsonObj = "http://nsfwapp-weyewe1.c9.io/api2/sub_reddits.json";
-    private VolleySingleton volleySingleton;
-	private ArrayList<SubReddit> subRedditArrayList;
-
-
-    private ProgressDialog pDialog;
+//    private String urlJsonObj = "http://nsfwapp-weyewe1.c9.io/api2/sub_reddits.json";
+//    private VolleySingleton volleySingleton;
+//	private ArrayList<SubReddit> subRedditArrayList;
+//
+//
+//    private ProgressDialog pDialog;
 
 	private boolean mLazyLoading = false;
 	private ViewState mViewState = null;
@@ -153,15 +154,15 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 	}
 
 
-    private void showpDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
-    }
-
-    private void hidepDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
-    }
+//    private void showpDialog() {
+//        if (!pDialog.isShowing())
+//            pDialog.show();
+//    }
+//
+//    private void hidepDialog() {
+//        if (pDialog.isShowing())
+//            pDialog.dismiss();
+//    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -178,11 +179,11 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 			handleArguments(arguments);
 		}
 
-        pDialog = new ProgressDialog(this.getActivity());
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(false);
-
-		subRedditArrayList = new ArrayList<SubReddit>();
+//        pDialog = new ProgressDialog(this.getActivity());
+//        pDialog.setMessage("Please wait...");
+//        pDialog.setCancelable(false);
+//
+//		subRedditArrayList = new ArrayList<SubReddit>();
 	}
 
 
@@ -345,23 +346,23 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		// position
 		int recipePosition = mAdapter.getRecipePosition(position);
 
+		Logcat.d("I am clicked. position: " + position);
+
+
 		// start activity
-		SubReddit recipe = mRecipeList.get(recipePosition);
-		startRecipeDetailActivity(view, recipe.getId());
+//		SubReddit recipe = mRecipeList.get(recipePosition);
+//		startRecipeDetailActivity(view, recipe.getId());
 	}
 
 
 	@Override
 	public void onDatabaseCallRespond(final DatabaseCallTask task, final Data<?> data)
 	{
-		runTaskCallback(new Runnable()
-		{
-			public void run()
-			{
-				if(mRootView==null) return; // view was destroyed
+		runTaskCallback(new Runnable() {
+			public void run() {
+				if (mRootView == null) return; // view was destroyed
 
-				if(task.getQuery().getClass().equals(RecipeReadAllQuery.class))
-				{
+				if (task.getQuery().getClass().equals(RecipeReadAllQuery.class)) {
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadAllQuery)");
 
 					// get data
@@ -373,9 +374,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 //						RecipeModel recipe = iterator.next();
 //						mRecipeList.add(recipe);
 //					}
-				}
-				else if(task.getQuery().getClass().equals(RecipeReadFavoritesQuery.class))
-				{
+				} else if (task.getQuery().getClass().equals(RecipeReadFavoritesQuery.class)) {
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadFavoritesQuery)");
 
 					// get data
@@ -387,9 +386,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 //						RecipeModel recipe = iterator.next();
 //						mRecipeList.add(recipe);
 //					}
-				}
-				else if(task.getQuery().getClass().equals(RecipeSearchQuery.class))
-				{
+				} else if (task.getQuery().getClass().equals(RecipeSearchQuery.class)) {
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeSearchQuery)");
 
 					// get data
@@ -401,9 +398,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 //						RecipeModel recipe = iterator.next();
 //						mRecipeList.add(recipe);
 //					}
-				}
-				else if(task.getQuery().getClass().equals(RecipeReadByCategoryQuery.class))
-				{
+				} else if (task.getQuery().getClass().equals(RecipeReadByCategoryQuery.class)) {
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadByCategoryQuery)");
 
 					// get data
@@ -418,18 +413,15 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 				}
 
 				// render view
-				if(mLazyLoading && mViewState==ViewState.CONTENT && mAdapter!=null)
-				{
+				if (mLazyLoading && mViewState == ViewState.CONTENT && mAdapter != null) {
 					mAdapter.notifyDataSetChanged();
-				}
-				else
-				{
-					if(mRecipeList!=null) renderView();
+				} else {
+					if (mRecipeList != null) renderView();
 				}
 
 				// hide progress
 				showLazyLoadingProgress(false);
-				if(mRecipeList!=null && mRecipeList.size()>0) showContent();
+				if (mRecipeList != null && mRecipeList.size() > 0) showContent();
 				else showEmpty();
 
 				// finish query
@@ -485,103 +477,10 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 
 	private void loadNSFWData(){
-        showpDialog();
+		mRecipeList = CookbookApplication.getWritableDatabase().readMovies( 1 );  // get data from DB
+		renderView();
 
-        JSONObject jsonBody = new JSONObject();
-        JSONObject userLogin = new JSONObject();
-
-
-        try {
-            userLogin.put("email", "willy@gmail.com");
-            userLogin.put("password", "willy1234");
-
-            jsonBody.put("user_login",  userLogin );
-//            jsonBody.put("password", "willy1234");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
-                Request.Method.GET,
-                urlJsonObj,
-                jsonBody,
-                createMyReqSuccessListener(),
-                createMyReqErrorListener()
-        ){
-//            protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("email", "w.yunnal@gmail.com");
-//                params.put("password", "willy1234");
-//                return params;
-//            };
-        };
-
-        // Adding request to request queue
-//        volleySingleton.getRequestQueue().add(jsonObjReq) ;
-		VolleySingleton.getInstance().getRequestQueue().add(jsonObjReq);
-
-//				addToRequestQueue(jsonObjReq);
-//        CookbookApplication.getAppContext().addToRequestQueue(jsonObjReq);
 	}
-
-    private Response.Listener<JSONObject> createMyReqSuccessListener() {
-        return new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("BOOM", response.toString());
-
-                try {
-//                    String auth_token = response.getString("auth_token");
-//                    String email = response.getString("email");
-					JSONArray subRedditsArray = response.getJSONArray("sub_reddits");
-
-					for (int i = 0; i < subRedditsArray.length(); i++) {
-						JSONObject row = subRedditsArray.getJSONObject(i);
-						long server_id = row.getLong("id");
-						String name = row.getString("name");
-						String urlImage = row.getString("image_url");
-
-						String jsonElementText  = "\n";
-						jsonElementText += "ServerId: " + server_id + "\n\n";
-						jsonElementText += "AuthToken: " + name + "\n\n";
-						jsonElementText += "Email: " + urlImage + "\n\n";
-
-						Log.d( "element " + i, jsonElementText);
-
-						SubReddit newObject= new SubReddit();
-						newObject.setId( server_id );
-						newObject.setName(name) ;
-						newObject.setUrlImage(urlImage);
-
-						mRecipeList.add( newObject );
-
-					}
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity().getApplicationContext(),
-                            "Error: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                }
-				renderView();
-                hidepDialog();
-            }
-        };
-    }
-
-
-    private Response.ErrorListener createMyReqErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-//                mTvResult.setText(error.getMessage());
-                hidepDialog();
-            }
-        };
-    }
 
 
 	private void loadData()

@@ -3,6 +3,7 @@ package com.robotemplates.cookbook.activity;
 import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,24 +20,40 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.robotemplates.cookbook.CookbookApplication;
 import com.robotemplates.cookbook.R;
 import com.robotemplates.cookbook.adapter.DrawerAdapter;
+import com.robotemplates.cookbook.database.DBApp;
 import com.robotemplates.cookbook.database.dao.CategoryDAO;
 import com.robotemplates.cookbook.database.model.CategoryModel;
+import com.robotemplates.cookbook.extras.SharedPrefUtil;
 import com.robotemplates.cookbook.fragment.RecipeListFragment;
 import com.robotemplates.cookbook.listener.OnSearchListener;
+import com.robotemplates.cookbook.logging.L;
+import com.robotemplates.cookbook.network.VolleySingleton;
+import com.robotemplates.cookbook.pojo.SubReddit;
 import com.robotemplates.cookbook.services.ServiceSubReddit;
 import com.robotemplates.cookbook.utility.ResourcesHelper;
 import com.robotemplates.cookbook.view.DrawerDividerItemDecoration;
 import com.robotemplates.cookbook.view.ScrimInsetsFrameLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -53,6 +70,22 @@ public class MainActivity extends ActionBarActivity implements DrawerAdapter.Cat
 	private List<CategoryModel> mCategoryList;
 	private static final int JOB_ID = 100;
 	private static final long POLL_FREQUENCY = 28800000;
+
+    private String urlJsonObj = "http://nsfwapp-weyewe1.c9.io/api2/sub_reddits.json";
+    private VolleySingleton volleySingleton;
+    private ArrayList<SubReddit> subRedditArrayList;
+    private ProgressDialog pDialog;
+
+
+    private void showpDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
 
 
 	public static Intent newIntent(Context context)
@@ -71,14 +104,145 @@ public class MainActivity extends ActionBarActivity implements DrawerAdapter.Cat
 		setupActionBar();
 		setupRecyclerView();
 		setupDrawer(savedInstanceState);
-
+        setupProgressDialog();
+//        setup DB : fill in all the subReddits. On periodical update, we will only change the image.
+        setupDB();
 //		setupJob();
+
+
 
 		// init analytics tracker
 		((CookbookApplication) getApplication()).getTracker();
 	}
 
-	private void setupJob() {
+    private void setupProgressDialog(){
+        pDialog = new ProgressDialog(this );
+        pDialog.setMessage("Setting up...");
+        pDialog.setCancelable(false);
+    }
+
+    private void setupDB(){
+
+        if(  CookbookApplication.getWritableDatabase().readMovies(1).size() == 0 ){
+            Log.d("need_to_populate_DB", "true");
+            loadNSFWData();
+
+        }else{
+
+            Log.d("need_to_populate_DB", "false");
+        }
+
+
+    }
+
+
+    private void loadNSFWData(){
+        showpDialog();
+
+
+
+        JSONObject jsonBody = new JSONObject();
+        JSONObject userLogin = new JSONObject();
+
+
+        try {
+            userLogin.put("email", "willy@gmail.com");
+            userLogin.put("password", "willy1234");
+
+            jsonBody.put("user_login",  userLogin );
+//            jsonBody.put("password", "willy1234");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.GET,
+                urlJsonObj,
+                jsonBody,
+                createMyReqSuccessListener(),
+                createMyReqErrorListener()
+        ){
+//            protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
+//                Map<String, String> params = new HashMap<String, String>();
+//                params.put("email", "w.yunnal@gmail.com");
+//                params.put("password", "willy1234");
+//                return params;
+//            };
+        };
+
+        // Adding request to request queue
+//        volleySingleton.getRequestQueue().add(jsonObjReq) ;
+        VolleySingleton.getInstance().getRequestQueue().add(jsonObjReq);
+
+//				addToRequestQueue(jsonObjReq);
+//        CookbookApplication.getAppContext().addToRequestQueue(jsonObjReq);
+    }
+
+    private Response.Listener<JSONObject> createMyReqSuccessListener() {
+        return new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("BOOM", response.toString());
+                ArrayList<SubReddit> subRedditList = new ArrayList<SubReddit>();
+                try {
+//                    String auth_token = response.getString("auth_token");
+//                    String email = response.getString("email");
+                    JSONArray subRedditsArray = response.getJSONArray("sub_reddits");
+
+                    for (int i = 0; i < subRedditsArray.length(); i++) {
+                        JSONObject row = subRedditsArray.getJSONObject(i);
+                        long server_id = row.getLong("id");
+                        String name = row.getString("name");
+                        String urlImage = row.getString("image_url");
+
+                        String jsonElementText  = "\n";
+                        jsonElementText += "ServerId: " + server_id + "\n\n";
+                        jsonElementText += "AuthToken: " + name + "\n\n";
+                        jsonElementText += "Email: " + urlImage + "\n\n";
+
+//                        Log.d( "element " + i, jsonElementText);
+
+                        SubReddit newObject= new SubReddit();
+                        newObject.setId( server_id );
+                        newObject.setName(name) ;
+                        newObject.setUrlImage(urlImage);
+
+                        subRedditList.add( newObject );
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText( getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+
+                Log.d("elementxxx ", " >>> hahaha. Total size: " + subRedditList.size() );
+                Log.d("theWritableDatabase: ", CookbookApplication.getWritableDatabase().toString());
+                CookbookApplication.getWritableDatabase().insertSubReddits(DBApp.BOX_OFFICE, subRedditList, true);
+                hidepDialog();
+
+            }
+        };
+    }
+
+
+    private Response.ErrorListener createMyReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                mTvResult.setText(error.getMessage());
+                hidepDialog();
+            }
+        };
+    }
+
+
+    private void setupJob() {
 		mJobScheduler = JobScheduler.getInstance(this);
 		//set an initial delay with a Handler so that the data loading by the JobScheduler does not clash with the loading inside the Fragment
 		new Handler().postDelayed(new Runnable() {

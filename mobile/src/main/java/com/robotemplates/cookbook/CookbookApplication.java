@@ -2,6 +2,7 @@ package com.robotemplates.cookbook;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -40,6 +41,8 @@ public class CookbookApplication extends Application
 	public void onCreate()
 	{
 		super.onCreate();
+
+		mDatabase = new DBApp(this);
 		
 		// force AsyncTask to be initialized in the main thread due to the bug:
 		// http://stackoverflow.com/questions/4280330/onpostexecute-not-being-called-in-asynctask-handler-runtime-exception
@@ -82,8 +85,11 @@ public class CookbookApplication extends Application
 
     public synchronized static DBApp getWritableDatabase() {
         if (mDatabase == null) {
+			Log.d("theWritableDatabase: ",  "it is NULL");
             mDatabase = new DBApp(getAppContext());
-        }
+        }else{
+			Log.d("theWritableDatabase: ",  "it is NOT NULL");
+		}
         return mDatabase;
     }
 
