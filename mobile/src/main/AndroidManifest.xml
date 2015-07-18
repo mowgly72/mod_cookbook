@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	package="com.robotemplates.cookbook"
-	android:installLocation="auto">
-	
-	<!-- versionCode, versionName, minSdkVersion, targetSdkVersion properties are set via Gradle script -->
-	
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.robotemplates.cookbook"
+    android:installLocation="auto" >
 
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- versionCode, versionName, minSdkVersion, targetSdkVersion properties are set via Gradle script -->
 
-	<!--
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--
 	You can easily change the main theme. Just modify application.android:theme attribute.
 	There are 8 main themes you can use:
 		Theme.Cookbook.Blue
@@ -28,19 +25,17 @@
 		Theme.Cookbook.Red
 		Theme.Cookbook.Yellow
 	Don't forget to modify also MainActivity's theme.
-	-->
+    -->
+    <application
+        android:name=".CookbookApplication"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Cookbook.Carrot"
+        tools:replace="android:icon" >
 
-	<application
-
-		android:name=".CookbookApplication"
-		android:icon="@mipmap/ic_launcher"
-		android:label="@string/app_name"
-		android:theme="@style/Theme.Cookbook.Carrot"
-		android:hardwareAccelerated="true"
-		android:allowBackup="true"
-		tools:replace="android:icon">
-
-		<!--
+        <!--
 		Themes for MainActivity:
 			Theme.Cookbook.TransparentStatusBar.Blue
 			Theme.Cookbook.TransparentStatusBar.Brown
@@ -50,35 +45,43 @@
 			Theme.Cookbook.TransparentStatusBar.Indigo
 			Theme.Cookbook.TransparentStatusBar.Red
 			Theme.Cookbook.TransparentStatusBar.Yellow
-		-->
-		
-		<activity
-			android:name=".activity.MainActivity"
-			android:label="@string/app_name"
-			android:theme="@style/Theme.Cookbook.TransparentStatusBar.Carrot"
-			android:launchMode="standard">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
+        -->
 
-		<activity
-			android:name=".activity.RecipeDetailActivity"
-			android:label="@string/title_recipe_detail"
-			android:launchMode="standard" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="standard"
+            android:theme="@style/Theme.Cookbook.TransparentStatusBar.Carrot" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-		<activity
-			android:name="com.google.android.gms.ads.AdActivity"
-			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.RecipeDetailActivity"
+            android:label="@string/title_recipe_detail"
+            android:launchMode="standard" />
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" />
 
-		<provider
-			android:name=".content.RecipeSearchRecentSuggestionsProvider"
-			android:authorities="com.robotemplates.cookbook.content.RecipeSearchRecentSuggestionsProvider"
-			android:exported="false" />
+        <provider
+            android:name=".content.RecipeSearchRecentSuggestionsProvider"
+            android:authorities="com.robotemplates.cookbook.content.RecipeSearchRecentSuggestionsProvider"
+            android:exported="false" />
 
-		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-		<meta-data android:name="com.google.android.gms.analytics.globalConfigResource" android:resource="@xml/analytics_global_tracker" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/analytics_global_tracker" />
 
-	</application>
+        <activity
+            android:name=".activity.ImageGalleryActivity"
+            android:label="@string/title_activity_image_gallery" >
+        </activity>
+    </application>
+
 </manifest>

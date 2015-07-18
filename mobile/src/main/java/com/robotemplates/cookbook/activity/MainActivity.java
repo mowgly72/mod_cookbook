@@ -235,7 +235,7 @@ public class MainActivity extends ActionBarActivity implements DrawerAdapter.Cat
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                mTvResult.setText(error.getMessage());
+
                 hidepDialog();
             }
         };

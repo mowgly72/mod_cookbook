@@ -44,6 +44,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.robotemplates.cookbook.CookbookApplication;
 import com.robotemplates.cookbook.CookbookConfig;
 import com.robotemplates.cookbook.R;
+import com.robotemplates.cookbook.activity.ImageGalleryActivity;
 import com.robotemplates.cookbook.activity.RecipeDetailActivity;
 import com.robotemplates.cookbook.adapter.RecipeListAdapter;
 import com.robotemplates.cookbook.adapter.SearchSuggestionAdapter;
@@ -214,28 +215,28 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		if(mViewState==null || mViewState==ViewState.OFFLINE)
 		{
 //			loadData();
-            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == null",
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == null",
+//                    Toast.LENGTH_LONG).show();
 		}
 		else if(mViewState==ViewState.CONTENT)
 		{
 //			if(mRecipeList!=null) renderView();
 //			showContent();
 
-            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == CONTENT",
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == CONTENT",
+//                    Toast.LENGTH_LONG).show();
 		}
 		else if(mViewState==ViewState.PROGRESS)
 		{
 //			showProgress();
-            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == PROGRESS",
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == PROGRESS",
+//                    Toast.LENGTH_LONG).show();
         }
 		else if(mViewState==ViewState.EMPTY)
 		{
 //			showEmpty();
-            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == EMPTY",
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == EMPTY",
+//                    Toast.LENGTH_LONG).show();
         }
 
 		// lazy loading progress
@@ -346,12 +347,17 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		// position
 		int recipePosition = mAdapter.getRecipePosition(position);
 
-		Logcat.d("I am clicked. position: " + position);
+//		Logcat.d("I am clicked. position: " + position);
+
+//
+		Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking position == " + position,
+				Toast.LENGTH_LONG).show();
 
 
 		// start activity
-//		SubReddit recipe = mRecipeList.get(recipePosition);
+		SubReddit recipe = mRecipeList.get(recipePosition);
 //		startRecipeDetailActivity(view, recipe.getId());
+		startImageGalleryActivity(view, recipe.getId());
 	}
 
 
@@ -477,7 +483,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 
 	private void loadNSFWData(){
-		mRecipeList = CookbookApplication.getWritableDatabase().readMovies( 1 );  // get data from DB
+		mRecipeList = CookbookApplication.getWritableDatabase().readMovies(1);  // get data from DB
 		renderView();
 
 	}
@@ -751,8 +757,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		recyclerView.setAdapter(mAdapter);
 
 		// lazy loading
-		recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener()
-		{
+		recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 			private static final int THRESHOLD = 100;
 
 			private int mCounter = 0;
@@ -760,27 +765,23 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 
 			@Override
-			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
-			{
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 				super.onScrollStateChanged(recyclerView, newState);
 
 				// reset counter
-				if(newState==RecyclerView.SCROLL_STATE_DRAGGING)
-				{
+				if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
 					mCounter = 0;
 				}
 
 				// disable item animation in adapter
-				if(newState==RecyclerView.SCROLL_STATE_DRAGGING)
-				{
+				if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
 					mAdapter.setAnimationEnabled(false);
 				}
 			}
 
 
 			@Override
-			public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-			{
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
 
 				GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
@@ -790,21 +791,17 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 				int lastVisibleItem = firstVisibleItem + visibleItemCount;
 
 				// lazy loading
-				if(totalItemCount-lastVisibleItem <= LAZY_LOADING_OFFSET && mRecipeList.size() % LAZY_LOADING_TAKE==0 && !mRecipeList.isEmpty())
-				{
-					if(!mLazyLoading) lazyLoadData();
+				if (totalItemCount - lastVisibleItem <= LAZY_LOADING_OFFSET && mRecipeList.size() % LAZY_LOADING_TAKE == 0 && !mRecipeList.isEmpty()) {
+					if (!mLazyLoading) lazyLoadData();
 				}
 
 				// toolbar and FAB animation
 				mCounter += dy;
-				if(recyclerView.getScrollState()==RecyclerView.SCROLL_STATE_DRAGGING || recyclerView.getScrollState()==RecyclerView.SCROLL_STATE_SETTLING)
-				{
+				if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_SETTLING) {
 					// scroll down
-					if(mCounter>THRESHOLD && firstVisibleItem>0)
-					{
+					if (mCounter > THRESHOLD && firstVisibleItem > 0) {
 						// hide toolbar
-						if(mToolbar.getVisibility()==View.VISIBLE && mToolbar.isEnabled())
-						{
+						if (mToolbar.getVisibility() == View.VISIBLE && mToolbar.isEnabled()) {
 							showToolbar(false);
 						}
 
@@ -815,11 +812,9 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 					}
 
 					// scroll up
-					else if(mCounter<-THRESHOLD || firstVisibleItem==0)
-					{
+					else if (mCounter < -THRESHOLD || firstVisibleItem == 0) {
 						// show toolbar
-						if(mToolbar.getVisibility()==View.GONE && mToolbar.isEnabled())
-						{
+						if (mToolbar.getVisibility() == View.GONE && mToolbar.isEnabled()) {
 							showToolbar(true);
 						}
 
@@ -906,6 +901,27 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		{
 			startActivity(intent);
 		}
+	}
+
+	private void startImageGalleryActivity(View view, long subRedditId)
+	{
+//		Intent intent = ImageGalleryActivity.newIntent(getActivity(), recipeId);
+//		getActivity().startActivity(intent, options.toBundle());
+
+		Intent intent = new Intent(getActivity().getBaseContext(), ImageGalleryActivity.class);
+		intent.putExtra("SUB_REDDIT_ID", subRedditId);
+		startActivity(intent);
+
+
+//		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+//		{
+//			ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+//			getActivity().startActivity(intent, options.toBundle());
+//		}
+//		else
+//		{
+//			startActivity(intent);
+//		}
 	}
 
 

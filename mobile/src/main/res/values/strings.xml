@@ -45,4 +45,8 @@
 	<string name="dialog_about_message"><![CDATA["People who love to eat are always the best people."<br />(Julia Child)<br /><br />Cookbook app made with love by <a href="http://robotemplates.com">Robo Templates</a>.]]></string>
 
 	<string name="dialog_servings_title">Servings</string>
+    <string name="title_activity_image_gallery">ImageGalleryActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>
