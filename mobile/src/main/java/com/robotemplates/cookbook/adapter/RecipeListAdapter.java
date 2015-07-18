@@ -17,6 +17,7 @@ import com.robotemplates.cookbook.CookbookApplication;
 import com.robotemplates.cookbook.R;
 import com.robotemplates.cookbook.database.model.RecipeModel;
 import com.robotemplates.cookbook.listener.AnimateImageLoadingListener;
+import com.robotemplates.cookbook.pojo.SubReddit;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	private static final int VIEW_TYPE_RECIPE = 1;
 	private static final int VIEW_TYPE_FOOTER = 2;
 
-	private List<RecipeModel> mRecipeList;
+	private List<SubReddit> mRecipeList;
 	private List<Object> mFooterList;
 	private RecipeViewHolder.OnItemClickListener mListener;
 	private int mGridSpanCount;
@@ -37,7 +38,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	private ImageLoadingListener mImageLoadingListener;
 
 
-	public RecipeListAdapter(List<RecipeModel> recipeList, List<Object> footerList, RecipeViewHolder.OnItemClickListener listener, int gridSpanCount)
+	public RecipeListAdapter(List<SubReddit> recipeList, List<Object> footerList, RecipeViewHolder.OnItemClickListener listener, int gridSpanCount)
 	{
 		mRecipeList = recipeList;
 		mFooterList = footerList;
@@ -87,7 +88,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		if(viewHolder instanceof RecipeViewHolder)
 		{
 			// entity
-			RecipeModel recipe = mRecipeList.get(getRecipePosition(position));
+			SubReddit recipe = mRecipeList.get(getRecipePosition(position));
 
 			// render view
 			if(recipe != null)
@@ -175,7 +176,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	}
 
 
-	public void refill(List<RecipeModel> recipeList, List<Object> footerList, RecipeViewHolder.OnItemClickListener listener, int gridSpanCount)
+	public void refill(List<SubReddit> recipeList, List<Object> footerList, RecipeViewHolder.OnItemClickListener listener, int gridSpanCount)
 	{
 		mRecipeList = recipeList;
 		mFooterList = footerList;
@@ -276,10 +277,10 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		}
 
 
-		public void bindData(RecipeModel recipe)
+		public void bindData(SubReddit recipe)
 		{
 			nameTextView.setText(recipe.getName());
-			mImageLoader.displayImage(recipe.getImage(), imageView, mDisplayImageOptions, mImageLoadingListener);
+			mImageLoader.displayImage(recipe.getUrlImage(), imageView, mDisplayImageOptions, mImageLoadingListener);
 		}
 	}
 

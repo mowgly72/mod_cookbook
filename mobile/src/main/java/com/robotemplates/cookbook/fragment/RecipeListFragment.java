@@ -3,6 +3,7 @@ package com.robotemplates.cookbook.fragment;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +34,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.melnykov.fab.FloatingActionButton;
@@ -54,10 +60,16 @@ import com.robotemplates.cookbook.database.query.RecipeReadFavoritesQuery;
 import com.robotemplates.cookbook.database.query.RecipeSearchQuery;
 import com.robotemplates.cookbook.dialog.AboutDialogFragment;
 import com.robotemplates.cookbook.listener.OnSearchListener;
+import com.robotemplates.cookbook.network.VolleySingleton;
+import com.robotemplates.cookbook.pojo.SubReddit;
 import com.robotemplates.cookbook.utility.Logcat;
 import com.robotemplates.cookbook.utility.NetworkManager;
 import com.robotemplates.cookbook.view.GridSpacingItemDecoration;
 import com.robotemplates.cookbook.view.ViewState;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,6 +88,13 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 	private static final int LAZY_LOADING_TAKE = 128;
 	private static final int LAZY_LOADING_OFFSET = 4;
 
+    private String urlJsonObj = "http://nsfwapp-weyewe1.c9.io/api2/sub_reddits.json";
+    private VolleySingleton volleySingleton;
+	private ArrayList<SubReddit> subRedditArrayList;
+
+
+    private ProgressDialog pDialog;
+
 	private boolean mLazyLoading = false;
 	private ViewState mViewState = null;
 	private View mRootView;
@@ -86,7 +105,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 	private long mCategoryId;
 	private String mSearchQuery;
-	private List<RecipeModel> mRecipeList = new ArrayList<>();
+	private List<SubReddit> mRecipeList = new ArrayList<>();
 	private List<Object> mFooterList = new ArrayList<>();
 
 
@@ -115,10 +134,10 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 		return fragment;
 	}
-	
-	
+
+
 	@Override
-	public void onAttach(Activity activity) 
+	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
 
@@ -132,13 +151,23 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 			throw new ClassCastException(activity.getClass().getName() + " must implement " + OnSearchListener.class.getName());
 		}
 	}
-	
-	
+
+
+    private void showpDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
+	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
 
@@ -148,89 +177,113 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		{
 			handleArguments(arguments);
 		}
+
+        pDialog = new ProgressDialog(this.getActivity());
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+
+		subRedditArrayList = new ArrayList<SubReddit>();
 	}
-	
-	
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{	
+	{
 		mRootView = inflater.inflate(R.layout.fragment_recipe_list, container, false);
 		setupRecyclerView();
 		return mRootView;
 	}
-	
-	
+
+
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState)
-	{
-		super.onActivityCreated(savedInstanceState);
-		
+	public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
+
+//        showpDialog();
+		loadNSFWData();
+//		get the data from the server. Push into the DB
+//		show it to the screen
+
+
+
+
 		// load and show data
 		if(mViewState==null || mViewState==ViewState.OFFLINE)
 		{
-			loadData();
+//			loadData();
+            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == null",
+                    Toast.LENGTH_LONG).show();
 		}
 		else if(mViewState==ViewState.CONTENT)
 		{
-			if(mRecipeList!=null) renderView();
-			showContent();
+//			if(mRecipeList!=null) renderView();
+//			showContent();
+
+            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == CONTENT",
+                    Toast.LENGTH_LONG).show();
 		}
 		else if(mViewState==ViewState.PROGRESS)
 		{
-			showProgress();
-		}
+//			showProgress();
+            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == PROGRESS",
+                    Toast.LENGTH_LONG).show();
+        }
 		else if(mViewState==ViewState.EMPTY)
 		{
-			showEmpty();
-		}
+//			showEmpty();
+            Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking viewState == EMPTY",
+                    Toast.LENGTH_LONG).show();
+        }
 
 		// lazy loading progress
-		if(mLazyLoading) showLazyLoadingProgress(true);
+//		if(mLazyLoading) showLazyLoadingProgress(true);
 
 		// show toolbar if hidden
 		showToolbar(true);
 	}
-	
-	
+
+
 	@Override
 	public void onStart()
 	{
 		super.onStart();
 	}
-	
-	
+
+
 	@Override
 	public void onResume()
 	{
 		super.onResume();
 	}
-	
-	
+
+
 	@Override
 	public void onPause()
 	{
 		super.onPause();
-		
+
 		// stop adapter
 		if(mAdapter!=null) mAdapter.stop();
 	}
-	
-	
+
+
 	@Override
 	public void onStop()
 	{
 		super.onStop();
 	}
-	
-	
+
+
 	@Override
 	public void onDestroyView()
 	{
 		super.onDestroyView();
 		mRootView = null;
 	}
-	
-	
+
+
 	@Override
 	public void onDestroy()
 	{
@@ -239,15 +292,15 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		// cancel async tasks
 		mDatabaseCallManager.cancelAllTasks();
 	}
-	
-	
+
+
 	@Override
 	public void onDetach()
 	{
 		super.onDetach();
 	}
-	
-	
+
+
 	@Override
 	public void onSaveInstanceState(Bundle outState)
 	{
@@ -255,8 +308,8 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		super.onSaveInstanceState(outState);
 		setUserVisibleHint(true);
 	}
-	
-	
+
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
@@ -264,10 +317,10 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.menu_recipe_list, menu);
 	}
-	
-	
+
+
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) 
+	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		// action bar menu behaviour
 		switch(item.getItemId())
@@ -293,7 +346,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		int recipePosition = mAdapter.getRecipePosition(position);
 
 		// start activity
-		RecipeModel recipe = mRecipeList.get(recipePosition);
+		SubReddit recipe = mRecipeList.get(recipePosition);
 		startRecipeDetailActivity(view, recipe.getId());
 	}
 
@@ -312,56 +365,56 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadAllQuery)");
 
 					// get data
-					Data<List<RecipeModel>> recipeReadAllData = (Data<List<RecipeModel>>) data;
-					List<RecipeModel> recipeList = recipeReadAllData.getDataObject();
-					Iterator<RecipeModel> iterator = recipeList.iterator();
-					while(iterator.hasNext())
-					{
-						RecipeModel recipe = iterator.next();
-						mRecipeList.add(recipe);
-					}
+//					Data<List<RecipeModel>> recipeReadAllData = (Data<List<RecipeModel>>) data;
+//					List<RecipeModel> recipeList = recipeReadAllData.getDataObject();
+//					Iterator<RecipeModel> iterator = recipeList.iterator();
+//					while(iterator.hasNext())
+//					{
+//						RecipeModel recipe = iterator.next();
+//						mRecipeList.add(recipe);
+//					}
 				}
 				else if(task.getQuery().getClass().equals(RecipeReadFavoritesQuery.class))
 				{
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadFavoritesQuery)");
 
 					// get data
-					Data<List<RecipeModel>> recipeReadFavoritesData = (Data<List<RecipeModel>>) data;
-					List<RecipeModel> recipeList = recipeReadFavoritesData.getDataObject();
-					Iterator<RecipeModel> iterator = recipeList.iterator();
-					while(iterator.hasNext())
-					{
-						RecipeModel recipe = iterator.next();
-						mRecipeList.add(recipe);
-					}
+//					Data<List<RecipeModel>> recipeReadFavoritesData = (Data<List<RecipeModel>>) data;
+//					List<RecipeModel> recipeList = recipeReadFavoritesData.getDataObject();
+//					Iterator<RecipeModel> iterator = recipeList.iterator();
+//					while(iterator.hasNext())
+//					{
+//						RecipeModel recipe = iterator.next();
+//						mRecipeList.add(recipe);
+//					}
 				}
 				else if(task.getQuery().getClass().equals(RecipeSearchQuery.class))
 				{
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeSearchQuery)");
 
 					// get data
-					Data<List<RecipeModel>> recipeSearchData = (Data<List<RecipeModel>>) data;
-					List<RecipeModel> recipeList = recipeSearchData.getDataObject();
-					Iterator<RecipeModel> iterator = recipeList.iterator();
-					while(iterator.hasNext())
-					{
-						RecipeModel recipe = iterator.next();
-						mRecipeList.add(recipe);
-					}
+//					Data<List<RecipeModel>> recipeSearchData = (Data<List<RecipeModel>>) data;
+//					List<RecipeModel> recipeList = recipeSearchData.getDataObject();
+//					Iterator<RecipeModel> iterator = recipeList.iterator();
+//					while(iterator.hasNext())
+//					{
+//						RecipeModel recipe = iterator.next();
+//						mRecipeList.add(recipe);
+//					}
 				}
 				else if(task.getQuery().getClass().equals(RecipeReadByCategoryQuery.class))
 				{
 					Logcat.d("Fragment.onDatabaseCallRespond(RecipeReadByCategoryQuery)");
 
 					// get data
-					Data<List<RecipeModel>> recipeReadByCategoryData = (Data<List<RecipeModel>>) data;
-					List<RecipeModel> recipeList = recipeReadByCategoryData.getDataObject();
-					Iterator<RecipeModel> iterator = recipeList.iterator();
-					while(iterator.hasNext())
-					{
-						RecipeModel recipe = iterator.next();
-						mRecipeList.add(recipe);
-					}
+//					Data<List<RecipeModel>> recipeReadByCategoryData = (Data<List<RecipeModel>>) data;
+//					List<RecipeModel> recipeList = recipeReadByCategoryData.getDataObject();
+//					Iterator<RecipeModel> iterator = recipeList.iterator();
+//					while(iterator.hasNext())
+//					{
+//						RecipeModel recipe = iterator.next();
+//						mRecipeList.add(recipe);
+//					}
 				}
 
 				// render view
@@ -389,41 +442,32 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 	@Override
 	public void onDatabaseCallFail(final DatabaseCallTask task, final Exception exception)
 	{
-		runTaskCallback(new Runnable()
-		{
-			public void run()
-			{
-				if(mRootView==null) return; // view was destroyed
+		runTaskCallback(new Runnable() {
+            public void run() {
+                if (mRootView == null) return; // view was destroyed
 
-				if(task.getQuery().getClass().equals(RecipeReadAllQuery.class))
-				{
-					Logcat.d("Fragment.onDatabaseCallFail(RecipeReadAllQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
-				}
-				else if(task.getQuery().getClass().equals(RecipeReadFavoritesQuery.class))
-				{
-					Logcat.d("Fragment.onDatabaseCallFail(RecipeReadFavoritesQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
-				}
-				else if(task.getQuery().getClass().equals(RecipeSearchQuery.class))
-				{
-					Logcat.d("Fragment.onDatabaseCallFail(RecipeSearchQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
-				}
-				else if(task.getQuery().getClass().equals(RecipeReadByCategoryQuery.class))
-				{
-					Logcat.d("Fragment.onDatabaseCallFail(RecipeReadByCategoryQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
-				}
+                if (task.getQuery().getClass().equals(RecipeReadAllQuery.class)) {
+                    Logcat.d("Fragment.onDatabaseCallFail(RecipeReadAllQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
+                } else if (task.getQuery().getClass().equals(RecipeReadFavoritesQuery.class)) {
+                    Logcat.d("Fragment.onDatabaseCallFail(RecipeReadFavoritesQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
+                } else if (task.getQuery().getClass().equals(RecipeSearchQuery.class)) {
+                    Logcat.d("Fragment.onDatabaseCallFail(RecipeSearchQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
+                } else if (task.getQuery().getClass().equals(RecipeReadByCategoryQuery.class)) {
+                    Logcat.d("Fragment.onDatabaseCallFail(RecipeReadByCategoryQuery): " + exception.getClass().getSimpleName() + " / " + exception.getMessage());
+                }
 
-				// hide progress
-				showLazyLoadingProgress(false);
-				if(mRecipeList!=null && mRecipeList.size()>0) showContent();
-				else showEmpty();
+                // hide progress
+                showLazyLoadingProgress(false);
+                if (mRecipeList != null && mRecipeList.size() > 0) showContent();
+                else showEmpty();
 
-				// handle fail
-				handleFail();
+                // handle fail
+                handleFail();
 
-				// finish query
-				mDatabaseCallManager.finishTask(task);
-			}
-		});
+                // finish query
+                mDatabaseCallManager.finishTask(task);
+            }
+        });
 	}
 
 
@@ -439,7 +483,107 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		mSearchQuery = arguments.getString(ARGUMENT_SEARCH_QUERY, "");
 	}
 
-	
+
+	private void loadNSFWData(){
+        showpDialog();
+
+        JSONObject jsonBody = new JSONObject();
+        JSONObject userLogin = new JSONObject();
+
+
+        try {
+            userLogin.put("email", "willy@gmail.com");
+            userLogin.put("password", "willy1234");
+
+            jsonBody.put("user_login",  userLogin );
+//            jsonBody.put("password", "willy1234");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.GET,
+                urlJsonObj,
+                jsonBody,
+                createMyReqSuccessListener(),
+                createMyReqErrorListener()
+        ){
+//            protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
+//                Map<String, String> params = new HashMap<String, String>();
+//                params.put("email", "w.yunnal@gmail.com");
+//                params.put("password", "willy1234");
+//                return params;
+//            };
+        };
+
+        // Adding request to request queue
+//        volleySingleton.getRequestQueue().add(jsonObjReq) ;
+		VolleySingleton.getInstance().getRequestQueue().add(jsonObjReq);
+
+//				addToRequestQueue(jsonObjReq);
+//        CookbookApplication.getAppContext().addToRequestQueue(jsonObjReq);
+	}
+
+    private Response.Listener<JSONObject> createMyReqSuccessListener() {
+        return new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("BOOM", response.toString());
+
+                try {
+//                    String auth_token = response.getString("auth_token");
+//                    String email = response.getString("email");
+					JSONArray subRedditsArray = response.getJSONArray("sub_reddits");
+
+					for (int i = 0; i < subRedditsArray.length(); i++) {
+						JSONObject row = subRedditsArray.getJSONObject(i);
+						long server_id = row.getLong("id");
+						String name = row.getString("name");
+						String urlImage = row.getString("image_url");
+
+						String jsonElementText  = "\n";
+						jsonElementText += "ServerId: " + server_id + "\n\n";
+						jsonElementText += "AuthToken: " + name + "\n\n";
+						jsonElementText += "Email: " + urlImage + "\n\n";
+
+						Log.d( "element " + i, jsonElementText);
+
+						SubReddit newObject= new SubReddit();
+						newObject.setId( server_id );
+						newObject.setName(name) ;
+						newObject.setUrlImage(urlImage);
+
+						mRecipeList.add( newObject );
+
+					}
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+				renderView();
+                hidepDialog();
+            }
+        };
+    }
+
+
+    private Response.ErrorListener createMyReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                mTvResult.setText(error.getMessage());
+                hidepDialog();
+            }
+        };
+    }
+
+
 	private void loadData()
 	{
 		if(!mDatabaseCallManager.hasRunningTask(RecipeReadAllQuery.class) &&
@@ -471,8 +615,8 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 			mDatabaseCallManager.executeTask(query, this);
 		}
 	}
-	
-	
+
+
 	private void lazyLoadData()
 	{
 		// show lazy loading progress
@@ -498,8 +642,8 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		}
 		mDatabaseCallManager.executeTask(query, this);
 	}
-	
-	
+
+
 	private void showLazyLoadingProgress(boolean visible)
 	{
 		if(visible)
@@ -673,8 +817,8 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		// floating action button
 		showFloatingActionButton(false);
 	}
-	
-	
+
+
 	private void renderView()
 	{
 		// reference

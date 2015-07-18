@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements DrawerAdapter.Cat
 		setupRecyclerView();
 		setupDrawer(savedInstanceState);
 
-		setupJob();
+//		setupJob();
 
 		// init analytics tracker
 		((CookbookApplication) getApplication()).getTracker();
