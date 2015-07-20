@@ -1,5 +1,6 @@
 package com.robotemplates.cookbook.activity;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -7,43 +8,69 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.melnykov.fab.FloatingActionButton;
+import com.robotemplates.cookbook.CookbookApplication;
 import com.robotemplates.cookbook.CookbookConfig;
 import com.robotemplates.cookbook.R;
 import com.robotemplates.cookbook.adapter.ImageListAdapter;
 import com.robotemplates.cookbook.adapter.RecipeListAdapter;
+import com.robotemplates.cookbook.database.DBApp;
 import com.robotemplates.cookbook.database.query.Query;
 import com.robotemplates.cookbook.database.query.RecipeReadAllQuery;
 import com.robotemplates.cookbook.database.query.RecipeReadByCategoryQuery;
 import com.robotemplates.cookbook.database.query.RecipeReadFavoritesQuery;
 import com.robotemplates.cookbook.database.query.RecipeSearchQuery;
+import com.robotemplates.cookbook.network.VolleySingleton;
 import com.robotemplates.cookbook.pojo.Image;
 import com.robotemplates.cookbook.pojo.SubReddit;
 import com.robotemplates.cookbook.utility.NetworkManager;
 import com.robotemplates.cookbook.view.GridSpacingItemDecoration;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageGalleryActivity extends ActionBarActivity {
+public class ImageGalleryActivity extends ActionBarActivity implements  ImageListAdapter.ImageViewHolder.OnItemClickListener {
 
     private static final int LAZY_LOADING_TAKE = 128;
     private static final int LAZY_LOADING_OFFSET = 4;
     private boolean mLazyLoading = false;
     private ImageListAdapter mAdapter;
 
+    private String urlJsonObj = "http://nsfwapp-weyewe1.c9.io/api2/images.json";
+
     private List<Image> mRecipeList = new ArrayList<>();
     private List<Object> mFooterList = new ArrayList<>();
 
     private long selectedSubRedditId;
+    private ProgressDialog pDialog;
+
+
+    private void showpDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +86,126 @@ public class ImageGalleryActivity extends ActionBarActivity {
                     Toast.LENGTH_LONG).show();
         }
 
+
+
+        setupProgressDialog();
         setupRecyclerView();
+        Log.d(">>>>>>>>> beforeLoad:", "the length of data: " + mRecipeList.size());
+
+        loadNSFWData();
 
 
+
+
+
+
+
+
+    }
+
+    private void setupProgressDialog(){
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+    }
+
+    private void loadNSFWData(){
+        Log.d(">>>>> tracer", "gonna load nsfwdata");
+        showpDialog();
+
+
+
+        JSONObject jsonBody = new JSONObject();
+        JSONObject userLogin = new JSONObject();
+
+        String targetImageUrl = urlJsonObj  + "?parent_id=" + selectedSubRedditId ;
+        Log.d(">>>> bkaboom", targetImageUrl);
+
+        try {
+            userLogin.put("email", "willy@gmail.com");
+            userLogin.put("password", "willy1234");
+
+            jsonBody.put("user_login",  userLogin );
+//            jsonBody.put("password", "willy1234");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.GET,
+                targetImageUrl,
+                jsonBody,
+                createMyReqSuccessListener(),
+                createMyReqErrorListener()
+        ){
+
+        };
+
+        Log.d(">>>>> bkaboom", "adding request to queue");
+        VolleySingleton.getInstance().getRequestQueue().add(jsonObjReq);
+        Log.d(">>>>> bkaboom", "AFTER adding request to queue");
+
+    }
+
+    private Response.Listener<JSONObject> createMyReqSuccessListener() {
+
+
+        Log.d(">>>>>>> bkaboom", "inside the success listener");
+        return new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+
+//                mRecipeList
+                Log.d(">>>>>> BOOM", response.toString());
+                try {
+//                    String auth_token = response.getString("auth_token");
+//                    String email = response.getString("email");
+                    JSONArray subRedditsArray = response.getJSONArray("images");
+
+                    for (int i = 0; i < subRedditsArray.length(); i++) {
+                        JSONObject row = subRedditsArray.getJSONObject(i);
+                        String url = row.getString("url");
+
+                        String jsonElementText  = "\n";
+                        jsonElementText += "image url: " + url + "\n\n";
+
+                        Log.d( "element " + i, jsonElementText);
+
+                        Image newObject= new Image();
+                        newObject.setUrl(url);
+
+                        mRecipeList.add( newObject );
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText( getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+
+//                mRecipeList = CookbookApplication.getWritableDatabase().readMovies(1)
+
+                hidepDialog();
+//                renderView();
+
+            }
+        };
+    }
+
+
+    private Response.ErrorListener createMyReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                hidepDialog();
+            }
+        };
     }
 
 
@@ -69,11 +213,13 @@ public class ImageGalleryActivity extends ActionBarActivity {
     {
         // reference
         final RecyclerView recyclerView = getRecyclerView();
-        frinal AdView adView = (AdView) this.findViewById(R.id.fragment_recipe_list_adview);
+        final AdView adView = (AdView) this.findViewById(R.id.fragment_recipe_list_adview);
 
         // content
         if(recyclerView.getAdapter()==null)
         {
+            Log.d("TRACER", "no adapter yet");
+            Log.d("TRACER", "The length of recipeList: " + mRecipeList.size());
             // create adapter
             mAdapter = new ImageListAdapter(mRecipeList, mFooterList, this, getGridSpanCount());
         }
@@ -101,7 +247,7 @@ public class ImageGalleryActivity extends ActionBarActivity {
             private static final int THRESHOLD = 100;
 
             private int mCounter = 0;
-            private Toolbar mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+            private Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
             @Override
@@ -132,7 +278,7 @@ public class ImageGalleryActivity extends ActionBarActivity {
 
                 // lazy loading
                 if (totalItemCount - lastVisibleItem <= LAZY_LOADING_OFFSET && mRecipeList.size() % LAZY_LOADING_TAKE == 0 && !mRecipeList.isEmpty()) {
-                    if (!mLazyLoading) lazyLoadData();
+//                    if (!mLazyLoading) lazyLoadData();
                 }
 
             }
@@ -142,48 +288,48 @@ public class ImageGalleryActivity extends ActionBarActivity {
 
 
         // admob
-        if(CookbookConfig.ADMOB_RECIPE_LIST_BANNER && NetworkManager.isOnline( this ))
-        {
-            AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    .addTestDevice(getString(R.string.admob_test_device_id))
-                    .build();
-            adView.loadAd(adRequest);
-            adView.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            adView.setVisibility(View.GONE);
-        }
+//        if(CookbookConfig.ADMOB_RECIPE_LIST_BANNER && NetworkManager.isOnline( this ))
+//        {
+//            AdRequest adRequest = new AdRequest.Builder()
+//                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                    .addTestDevice(getString(R.string.admob_test_device_id))
+//                    .build();
+//            adView.loadAd(adRequest);
+//            adView.setVisibility(View.VISIBLE);
+//        }
+//        else
+//        {
+//            adView.setVisibility(View.GONE);
+//        }
     }
 
 
 
-    private void lazyLoadData()
-    {
-        // show lazy loading progress
-        showLazyLoadingProgress(true);
-
-        // run async task
-        Query query;
-        if(mCategoryId==CATEGORY_ID_ALL)
-        {
-            query = new RecipeReadAllQuery(mRecipeList.size(), LAZY_LOADING_TAKE);
-        }
-        else if(mCategoryId==CATEGORY_ID_FAVORITES)
-        {
-            query = new RecipeReadFavoritesQuery(mRecipeList.size(), LAZY_LOADING_TAKE);
-        }
-        else if(mCategoryId==CATEGORY_ID_SEARCH)
-        {
-            query = new RecipeSearchQuery(mSearchQuery, mRecipeList.size(), LAZY_LOADING_TAKE);
-        }
-        else
-        {
-            query = new RecipeReadByCategoryQuery(mCategoryId, mRecipeList.size(), LAZY_LOADING_TAKE);
-        }
-        mDatabaseCallManager.executeTask(query, this);
-    }
+//    private void lazyLoadData()
+//    {
+//        // show lazy loading progress
+//        showLazyLoadingProgress(true);
+//
+//        // run async task
+//        Query query;
+//        if(mCategoryId==CATEGORY_ID_ALL)
+//        {
+//            query = new RecipeReadAllQuery(mRecipeList.size(), LAZY_LOADING_TAKE);
+//        }
+//        else if(mCategoryId==CATEGORY_ID_FAVORITES)
+//        {
+//            query = new RecipeReadFavoritesQuery(mRecipeList.size(), LAZY_LOADING_TAKE);
+//        }
+//        else if(mCategoryId==CATEGORY_ID_SEARCH)
+//        {
+//            query = new RecipeSearchQuery(mSearchQuery, mRecipeList.size(), LAZY_LOADING_TAKE);
+//        }
+//        else
+//        {
+//            query = new RecipeReadByCategoryQuery(mCategoryId, mRecipeList.size(), LAZY_LOADING_TAKE);
+//        }
+//        mDatabaseCallManager.executeTask(query, this);
+//    }
 
 
     private void showLazyLoadingProgress(boolean visible)
@@ -221,10 +367,17 @@ public class ImageGalleryActivity extends ActionBarActivity {
 
     private void setupRecyclerView()
     {
+        Log.d(">>> RV", "ahaha");
         GridLayoutManager gridLayoutManager = new GridLayoutManager( this, getGridSpanCount());
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
         RecyclerView recyclerView = getRecyclerView();
         recyclerView.setLayoutManager(gridLayoutManager);
+
+
+        mAdapter = new ImageListAdapter(mRecipeList, mFooterList, this, getGridSpanCount());
+
+        Log.d(">>> Adapter", mAdapter.toString() );
+        recyclerView.setAdapter( mAdapter);
     }
 
     private int getGridSpanCount()
@@ -258,5 +411,16 @@ public class ImageGalleryActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(View view, int position, long id, int viewType) {
+        int recipePosition = mAdapter.getRecipePosition(position);
+
+//		Logcat.d("I am clicked. position: " + position);
+
+//
+        Toast.makeText( getApplicationContext(),  "fhe url  == " + position,
+                Toast.LENGTH_LONG).show();
     }
 }

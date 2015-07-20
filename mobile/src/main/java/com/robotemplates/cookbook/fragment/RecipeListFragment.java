@@ -44,6 +44,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.robotemplates.cookbook.CookbookApplication;
 import com.robotemplates.cookbook.CookbookConfig;
 import com.robotemplates.cookbook.R;
+import com.robotemplates.cookbook.activity.ImageActivity;
 import com.robotemplates.cookbook.activity.ImageGalleryActivity;
 import com.robotemplates.cookbook.activity.RecipeDetailActivity;
 import com.robotemplates.cookbook.adapter.RecipeListAdapter;
@@ -350,14 +351,14 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 //		Logcat.d("I am clicked. position: " + position);
 
 //
-		Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking position == " + position,
-				Toast.LENGTH_LONG).show();
+//		Toast.makeText(this.getActivity().getApplicationContext(),  "fhe fucking position == " + position,
+//				Toast.LENGTH_LONG).show();
 
 
 		// start activity
 		SubReddit recipe = mRecipeList.get(recipePosition);
 //		startRecipeDetailActivity(view, recipe.getId());
-		startImageGalleryActivity(view, recipe.getId());
+		startImageActivity(view, recipe.getId());
 	}
 
 
@@ -905,23 +906,20 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 
 	private void startImageGalleryActivity(View view, long subRedditId)
 	{
-//		Intent intent = ImageGalleryActivity.newIntent(getActivity(), recipeId);
-//		getActivity().startActivity(intent, options.toBundle());
-
 		Intent intent = new Intent(getActivity().getBaseContext(), ImageGalleryActivity.class);
 		intent.putExtra("SUB_REDDIT_ID", subRedditId);
 		startActivity(intent);
 
 
-//		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-//		{
-//			ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
-//			getActivity().startActivity(intent, options.toBundle());
-//		}
-//		else
-//		{
-//			startActivity(intent);
-//		}
+	}
+
+	private void startImageActivity(View view, long subRedditId)
+	{
+		Intent intent = new Intent(getActivity().getBaseContext(), ImageActivity.class);
+		intent.putExtra("SUB_REDDIT_ID", subRedditId);
+		startActivity(intent);
+
+
 	}
 
 

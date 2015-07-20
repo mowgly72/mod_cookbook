@@ -13,6 +13,7 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!--
 	You can easily change the main theme. Just modify application.android:theme attribute.
 	There are 8 main themes you can use:
@@ -81,6 +82,14 @@
         <activity
             android:name=".activity.ImageGalleryActivity"
             android:label="@string/title_activity_image_gallery" >
+        </activity>
+        <activity
+            android:name=".activity.Image"
+            android:label="@string/title_activity_image" >
+        </activity>
+        <activity
+            android:name=".activity.ImageActivity"
+            android:label="@string/title_activity_image" >
         </activity>
     </application>
 
