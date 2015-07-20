@@ -358,7 +358,7 @@ public class RecipeListFragment extends TaskFragment implements DatabaseCallList
 		// start activity
 		SubReddit recipe = mRecipeList.get(recipePosition);
 //		startRecipeDetailActivity(view, recipe.getId());
-		startImageActivity(view, recipe.getId());
+		startImageGalleryActivity(view, recipe.getId());
 	}
 
 

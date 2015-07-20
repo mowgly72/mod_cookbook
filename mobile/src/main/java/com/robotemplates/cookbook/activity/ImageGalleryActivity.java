@@ -166,7 +166,7 @@ public class ImageGalleryActivity extends ActionBarActivity implements  ImageLis
 
                     for (int i = 0; i < subRedditsArray.length(); i++) {
                         JSONObject row = subRedditsArray.getJSONObject(i);
-                        String url = row.getString("url");
+                        String url = row.getString("main_url");
 
                         String jsonElementText  = "\n";
                         jsonElementText += "image url: " + url + "\n\n";
@@ -191,7 +191,7 @@ public class ImageGalleryActivity extends ActionBarActivity implements  ImageLis
 //                mRecipeList = CookbookApplication.getWritableDatabase().readMovies(1)
 
                 hidepDialog();
-//                renderView();
+                renderView();
 
             }
         };
@@ -304,7 +304,7 @@ public class ImageGalleryActivity extends ActionBarActivity implements  ImageLis
     }
 
 
-
+//
 //    private void lazyLoadData()
 //    {
 //        // show lazy loading progress
@@ -373,11 +373,11 @@ public class ImageGalleryActivity extends ActionBarActivity implements  ImageLis
         RecyclerView recyclerView = getRecyclerView();
         recyclerView.setLayoutManager(gridLayoutManager);
 
-
-        mAdapter = new ImageListAdapter(mRecipeList, mFooterList, this, getGridSpanCount());
-
-        Log.d(">>> Adapter", mAdapter.toString() );
-        recyclerView.setAdapter( mAdapter);
+//
+//        mAdapter = new ImageListAdapter(mRecipeList, mFooterList, this, getGridSpanCount());
+//
+//        Log.d(">>> Adapter", mAdapter.toString() );
+//        recyclerView.setAdapter( mAdapter);
     }
 
     private int getGridSpanCount()
